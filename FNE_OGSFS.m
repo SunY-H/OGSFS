@@ -1,5 +1,7 @@
 function [ selectedFeatures,time ] = FNE_OGSFS(X,Y,G,alpha)
 %OSGFS_FNRS
+start=tic;
+
 [row,P]=size(X);
 Data = [X,Y];
 %Fuzzy Decision
@@ -25,7 +27,6 @@ for k = 1:P
 end
 
 %Streaming Feature Selection
-start=tic;
 mode=zeros(1,P);
 inter_Selected = find(mode == 1);
 for i=1:G:P
@@ -79,9 +80,9 @@ for i=1:G:P
             FNE_J = FN_joint_entropy(X(:,index),fuzzy_neighbor_group{index},DepC(index),FD,class_num);
             FNMI_J = FN_MI(X(:,index),fuzzy_neighbor_group{index},FD,class_num)/FNE_J;
             
-            FNID = (FNMI_houxuan - FNMI_Middle - FNMI_J) / (FNMI_Middle+FNMI_houxuan);
+            FNIG = FNMI_houxuan - FNMI_Middle - FNMI_J;
             
-            if FNID <= 0
+            if FNIG <= 0
                 mode(1,index)=0;
             else
                 for k = 1:col_middle
@@ -92,8 +93,8 @@ for i=1:G:P
                     
                     FNSU_J = 2*FNMI_J/(FNE_J + FNE_D);
                     FNSU_K = 2*FNMI_K/(FNE_K + FNE_D);
-                    S = FNSU_J - FNSU_K;
-                    if S <= 0
+                    FNCR = FNSU_J - FNSU_K;
+                    if FNCR <= 0
                         mode(1,index) = 0;
                         break;
                     else
